@@ -1,12 +1,16 @@
 import random
 from enum import Enum, auto
-from logic.dict_logic import *
+from logic.dict import *
+
+
+global dicts_path
+dicts_path = "../res/"
 
 
 class Language(Enum):
-    ENG = '../res/english.csv'
-    RUS = '../res/russian.csv'
-    TEST = '../res/sample.csv'
+    ENG = 'english.csv'
+    RUS = 'russian.csv'
+    TEST = 'sample.csv'
 
 
 class Game:
@@ -21,7 +25,7 @@ class Game:
     def __init__(self, players: List[int], lang: Language):
         self.players = players
         self.scores = [0 for p in players]
-        self.words = read_words(lang.value)
+        self.words = read_words(dicts_path + lang.value)
         self.used = set()
         self.line = random.choice(tuple(self.words))
         self.current_player = random.randrange(0, len(players))

@@ -1,6 +1,6 @@
-from logic.dict_logic import *
+from logic.dict import *
 
-# Tests for functions in dict_logic.py
+# Tests for functions in dict.py
 # Run with pytest.
 
 
@@ -10,9 +10,9 @@ file_rus = '../res/russian.csv'
 
 def test_read_words_sample():
     words = read_words("../res/sample.csv")
-    assert len(words) == 17
-    assert 'hello' in words
-    assert 'there' not in words
+    assert len(words) == 8
+    assert 'brown' in words
+    assert 'quick' not in words
 
 
 def test_read_words_english():

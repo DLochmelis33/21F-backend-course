@@ -1,4 +1,4 @@
-from logic.game_controller import *
+from logic.game import *
 
 
 def test_game():

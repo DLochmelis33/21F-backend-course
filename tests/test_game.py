@@ -1,9 +1,9 @@
-from logic.game import *
+from game_logic.game import *
 
 
 def test_game():
     players = [1, 2]
-    assert {'ab', 'ba', 'aba', 'bab', 'abab', 'baba', 'brown'}.issubset(read_words('../res/sample.csv')), 'invalid sample dict!'
+    assert {'ab', 'ba', 'aba', 'bab', 'abab', 'baba', 'brown'}.issubset(read_words('../res/sample.csv')), 'invalid sample dict_logic!'
     game: Game = Game(players, Language.TEST)
     # preset for testing
     game.line = 'aaa'

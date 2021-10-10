@@ -1,16 +1,9 @@
 import random
 from enum import Enum, auto
-from logic.dict import *
+from typing import List
 
-
-global dicts_path
-dicts_path = "../res/"
-
-
-class Language(Enum):
-    ENG = 'english.csv'
-    RUS = 'russian.csv'
-    TEST = 'sample.csv'
+from dict_logic.dict import Language
+from dict_logic.dict_logic_provider import DictLogicProvider as DLP
 
 
 class Game:
@@ -21,23 +14,25 @@ class Game:
     words: set[str]
     used: set[str] = set()
     in_progress: bool = True
+    dlp: DLP
 
-    def __init__(self, players: List[int], lang: Language):
+    def __init__(self, players: List[int], lang: Language, dlp: DLP):
+        self.dlp = dlp
         self.players = players
         self.scores = [0 for p in players]
-        self.words = read_words(dicts_path + lang.value)
+        self.words = self.dlp.read_words(dicts_path + lang.value)
         self.used = set()
         self.line = random.choice(tuple(self.words))
         self.current_player = random.randrange(0, len(players))
 
     def try_move(self, word: str) -> bool:
         # check correctness
-        assert is_continuable(self.line, self.words, self.used)
+        assert self.dlp.is_continuable(self.line, self.words, self.used)
         if not self.in_progress:
             return False
         if word in self.used:
             return False
-        conts: set[str] = cont_word_overlap(self.line, word, self.words)
+        conts: set[str] = self.dlp.cont_word_overlap(self.line, word, self.words)
         if conts == set():
             return False
 
@@ -48,7 +43,7 @@ class Game:
         self.used.add(word)
         self.scores[self.current_player] += len(cont)
 
-        if not is_continuable(self.line, self.words, self.used):
+        if not self.dlp.is_continuable(self.line, self.words, self.used):
             self.in_progress = False
             return True
 

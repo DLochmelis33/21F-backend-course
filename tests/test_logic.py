@@ -1,6 +1,6 @@
-from logic.dict import *
+from dict_logic.dict import *
 
-# Tests for functions in dict.py
+# Tests for functions in dict_logic.py
 # Run with pytest.
 
 

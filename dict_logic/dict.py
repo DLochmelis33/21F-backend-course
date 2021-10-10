@@ -1,5 +1,12 @@
-import re, csv
-from typing import List
+import csv
+import re
+from enum import Enum
+
+
+class Language(Enum):
+    ENG = 'english.csv'
+    RUS = 'russian.csv'
+    TEST = 'sample.csv'
 
 
 def read_words(path: str) -> set[str]:

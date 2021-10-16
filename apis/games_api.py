@@ -2,13 +2,14 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 from pydantic import BaseModel, ValidationError, validator
 
+
 import logic.game as g
 from logic.game import Game, Language
 from apis.users_api import convert_nickname_to_id
+from redis_wrapper import r_new, r_get, r_set
 
 router = APIRouter()
 
-games: List[Game] = []
 
 
 # ----- ----- -----
@@ -41,8 +42,9 @@ def write_stats(r: NewGameRequest):
         if player_ids[i] == -1:
             raise HTTPException(status_code=422, detail=f'no user with nickname \'{r.players[i]}\' was found')
 
-    games.append(Game(player_ids, Language[r.lang]))
-    return NewGameResponse(game_id=len(games) - 1)
+    game_id = r_new()
+    r_set(game_id, Game(player_ids, Language[r.lang]))
+    return NewGameResponse(game_id=game_id)
 
 
 # ----- ----- -----
@@ -68,19 +70,24 @@ def form_game_response(game: Game) -> GameResponse:
 
 @router.post("/game/{game_id}")
 def submit_move(game_id: int, request: GameRequest):
-    if game_id not in range(0, len(games)):
+    game = r_get(game_id)
+    if not game:
         raise HTTPException(status_code=404, detail='no such game')
-    game = games[game_id]
+
     if not game.in_progress:
         raise HTTPException(status_code=422, detail='cannot move in finished game')
-    valid_move = game.try_move(request.word)
-    response = form_game_response(games[game_id])
+
+    valid_move = game.try_move(request.word) # modifies game!
+    response = form_game_response(game)
     response.last_move_valid = "yes" if valid_move else "no"
+
+    r_set(game_id, game)
     return response
 
 
 @router.get("/game/{game_id}")
 def get_game_info(game_id: int):
-    if game_id not in range(0, len(games)):
+    game = r_get(game_id)
+    if not game:
         raise HTTPException(status_code=404, detail='no such game')
-    return form_game_response(games[game_id])
+    return form_game_response(game)

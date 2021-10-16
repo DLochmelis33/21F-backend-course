@@ -1,9 +1,8 @@
 import random
-from enum import Enum, auto
+from enum import Enum
 from logic.dict import *
 
 
-global dicts_path
 dicts_path = "../res/"
 
 

@@ -2,7 +2,7 @@ from typing import List
 from pydantic import BaseModel, ValidationError, validator
 from fastapi import FastAPI, HTTPException
 
-from apis import games_api
+from apis import games_api, users_api
 
 import logic.game
 from logic.game import Game, Language
@@ -11,6 +11,7 @@ from apis.games_api import games
 app = FastAPI()
 
 app.include_router(games_api.router)
+app.include_router(users_api.router)
 
 # ----- ----- -----
 # dummy methods (hw01)

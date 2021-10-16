@@ -13,6 +13,7 @@ app = FastAPI()
 app.include_router(games_api.router)
 app.include_router(users_api.router)
 
+
 # ----- ----- -----
 # dummy methods (hw01)
 # ----- ----- -----

@@ -77,7 +77,6 @@ def test_is_continuable_sample():
     assert not is_continuable('a', words, {'aba', 'ababa'})
     assert is_continuable('a', words, {'aba'})
 
-
 # def test_is_continuable_english():
 #     words = read_words(file_eng)
 #     assert is_continuable('crab', words, set())

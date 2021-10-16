@@ -2,7 +2,6 @@ import random
 from enum import Enum
 from logic.dict import *
 
-
 dicts_path = "../res/"
 
 

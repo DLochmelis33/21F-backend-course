@@ -18,5 +18,13 @@ if __name__ == '__main__':
         friend_id INT NOT NULL
     )
     """)
+    # add dummy users
+    cur.execute("""
+    INSERT INTO Users (nickname)
+    VALUES 
+        ('vasya'),
+        ('petya')
+    """)
+
     con.commit()
     con.close()

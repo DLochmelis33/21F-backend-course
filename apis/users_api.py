@@ -97,6 +97,7 @@ def add_game_stats(data: List[Tuple[int, bool]]):
 
 
 def convert_nickname_to_id(nickname: str) -> int:
+    print(paths.sqlite_users_info_path)
     cur.execute("""
         SELECT rowid FROM Users
         WHERE nickname = ? 

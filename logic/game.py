@@ -53,7 +53,7 @@ class Game:
             self.in_progress = False
             # update user stats
             wons = [False] * len(self.players)
-            wons[argmax(self.scores)] = True
+            wons[argmax(self.scores)] = True # first player that ties wins
             add_game_stats(list(zip(self.players, wons)))
             return True
 

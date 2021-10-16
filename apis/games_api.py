@@ -4,6 +4,7 @@ from pydantic import BaseModel, ValidationError, validator
 
 import logic.game as g
 from logic.game import Game, Language
+from apis.users_api import convert_nickname_to_id
 
 router = APIRouter()
 
@@ -15,12 +16,12 @@ games: List[Game] = []
 # ----- ----- -----
 
 class NewGameRequest(BaseModel):
-    players: List[int]
+    players: List[str]
     lang: str
 
     @validator("lang")
     def is_supported(cls, val: str):
-        # Language[val]
+        print(Language._value2member_map_.values())
         return val
 
 
@@ -29,9 +30,18 @@ class NewGameResponse(BaseModel):
 
 
 @router.post("/newgame")
-def write_stats(request: NewGameRequest):
+def write_stats(r: NewGameRequest):
     g.dicts_path = "res/"
-    games.append(Game(request.players, Language[request.lang]))
+
+    if len(r.players) < 2:
+        raise HTTPException(status_code=422, detail='at least 2 players are required to start a game')
+
+    player_ids = [convert_nickname_to_id(nick) for nick in r.players]
+    for i in range(len(player_ids)):
+        if player_ids[i] == -1:
+            raise HTTPException(status_code=422, detail=f'no user with nickname \'{r.players[i]}\' was found')
+
+    games.append(Game(player_ids, Language[r.lang]))
     return NewGameResponse(game_id=len(games) - 1)
 
 

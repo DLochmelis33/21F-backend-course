@@ -1,9 +1,12 @@
 import random
 from enum import Enum
 from logic.dict import *
+from numpy import argmax
+
+from apis.users_api import add_game_stats
+
 
 dicts_path = "../res/"
-
 
 class Language(Enum):
     ENG = 'english.csv'
@@ -48,6 +51,10 @@ class Game:
 
         if not is_continuable(self.line, self.words, self.used):
             self.in_progress = False
+            # update user stats
+            wons = [False] * len(self.players)
+            wons[argmax(self.scores)] = True
+            add_game_stats(list(zip(self.players, wons)))
             return True
 
         self.current_player = (self.current_player + 1) % len(self.players)

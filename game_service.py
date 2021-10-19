@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException
 
 import game_logic.game
 from dict_logic.dict import Language
+from dict_service import LocalDLP
 from game_logic.game import Game
 
 app = FastAPI()
@@ -31,8 +32,8 @@ class NewGameRequest(BaseModel):
 
     @validator("lang")
     def is_supported(cls, val: str):
-        if val not in set(l.value for l in Language):
-            raise ValueError(f'\'{val}\' is not a supported language')
+        # if val not in set(l.value for l in Language):
+        #     raise ValueError(f'\'{val}\' is not a supported language')
         return val
 
 
@@ -43,7 +44,7 @@ class NewGameResponse(BaseModel):
 @app.post("/newgame")
 def write_stats(request: NewGameRequest):
     game_logic.game.dicts_path = "res/"
-    games.append(Game(request.players, Language[request.lang]))
+    games.append(Game(request.players, Language[request.lang], dlp=LocalDLP()))
     return NewGameResponse(game_id=len(games) - 1)
 
 

@@ -4,6 +4,7 @@ from typing import List
 
 from dict_logic.dict import Language
 from dict_logic.dict_logic_provider import DictLogicProvider as DLP
+from dict_service import dicts_path
 
 
 class Game:
@@ -20,7 +21,7 @@ class Game:
         self.dlp = dlp
         self.players = players
         self.scores = [0 for p in players]
-        self.words = self.dlp.read_words(dicts_path + lang.value)
+        self.words = self.dlp.read_words(dicts_path, lang.value)
         self.used = set()
         self.line = random.choice(tuple(self.words))
         self.current_player = random.randrange(0, len(players))

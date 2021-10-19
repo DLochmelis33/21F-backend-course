@@ -2,12 +2,23 @@ from typing import List
 from pydantic import BaseModel, validator
 from fastapi import FastAPI, HTTPException
 
+import pika
+
 import game_logic.game
 from dict_logic.dict import Language
 from dict_service import LocalDLP
 from game_logic.game import Game
 
 app = FastAPI()
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+channel = connection.channel()
+log_queue = 'log'
+channel.queue_declare(queue=log_queue)
+
+
+def log(msg):
+    channel.basic_publish(exchange='', routing_key=log_queue, body=str(msg))
 
 
 # ----- ----- -----
@@ -26,6 +37,7 @@ def read_root():
 
 games: List[Game] = []
 
+
 class NewGameRequest(BaseModel):
     players: List[int]
     lang: str
@@ -42,9 +54,10 @@ class NewGameResponse(BaseModel):
 
 
 @app.post("/newgame")
-def write_stats(request: NewGameRequest):
+def start_new_game(request: NewGameRequest):
     game_logic.game.dicts_path = "res/"
     games.append(Game(request.players, Language[request.lang], dlp=LocalDLP()))
+    log(f'started new game with id {len(games) - 1}')
     return NewGameResponse(game_id=len(games) - 1)
 
 
@@ -79,6 +92,7 @@ def submit_move(game_id: int, request: GameRequest):
     valid_move = game.try_move(request.word)
     response = form_game_response(games[game_id])
     response.last_move_valid = "yes" if valid_move else "no"
+    log(f'a move was made: {str(request.word)}')
     return response
 
 
